@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from .models import Product
 from .serializers import ProductSerializer
 from .permissions import IsOwnerOrReadOnly
+from rest_framework.filters import SearchFilter
+from .serializers import ProductSerializer
 
 class ProductListCreateAPIView(generics.ListCreateAPIView):
     queryset = Product.objects.all()
@@ -65,3 +67,10 @@ def update_or_delete_product(request, productId):
 
         product.delete()
         return Response({"detail": "상품이 성공적으로 삭제되었습니다."}, status=status.HTTP_204_NO_CONTENT)
+
+class ProductListAPIView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.AllowAny]
+    filter_backends = [SearchFilter]
+    search_fields = ['title', 'user__nickname', 'content']
